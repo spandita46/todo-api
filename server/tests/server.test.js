@@ -9,8 +9,19 @@ const {
     Todo
 } = require('../models/todo');
 
+const todosList = [{
+    text: 'First ToDo'
+}, {
+    text: 'Second ToDo'
+}];
+
 beforeEach((done) => {
-    Todo.remove({}).then(() => done());
+    Todo
+        .remove({})
+        .then(() => {
+            Todo.insertMany(todosList);
+        })
+        .then(() => done());
 });
 
 describe('POST /todos', () => {
@@ -31,8 +42,8 @@ describe('POST /todos', () => {
                 }
 
                 Todo.find().then((todos) => {
-                    expect(todos.length).toBe(1);
-                    expect(todos[0].text).toBe(text);
+                    expect(todos.length).toBe(todosList.length + 1);
+                    expect(todos[todosList.length].text).toBe(text);
                     done();
                 }).catch((e) => done(e));
             })
@@ -49,9 +60,25 @@ describe('POST /todos', () => {
                 }
 
                 Todo.find().then((todos) => {
-                    expect(todos.length).toBe(0);
+                    expect(todos.length).toBe(todosList.length);
                     done();
                 }).catch((e) => done(e));
             })
     });
+});
+
+
+describe('GET /todos', () => {
+    it('should get all todos', (done) => {
+        const text = "New Job To Do";
+        request(app)
+            .get('/todos')
+            .send()
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todos.length).toBe(todosList.length);
+            })
+            .end(done)
+    });
+
 });
