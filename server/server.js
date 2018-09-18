@@ -23,12 +23,25 @@ app.post('/todos', (req, res) => {
     });
 
     todo.save().then((result) => {
-        console.log("Saved New ToDo");
-        console.log(JSON.stringify(result, undefined, 2));
-        res.send(result);
+        res
+            .send(result);
     }, (err) => {
-        console.log("Failed To Save New ToDo", err);
-        res.status(400).send(err);
+        res
+            .status(400)
+            .send(err);
+    });
+});
+
+app.get('/todos', (req, res) => {
+    Todo.find().then((todos) => {
+        res
+            .send({
+                todos
+            });
+    }).catch((err) => {
+        res
+            .status(400)
+            .send(err);
     });
 });
 
