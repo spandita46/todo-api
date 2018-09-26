@@ -76,6 +76,34 @@ app.get('/todos/:id', (req, res) => {
     });
 });
 
+app.delete('/todos/:id', (req, res) => {
+    const {
+        id
+    } = req.params;
+
+    if (!ObjectID.isValid(id)) {
+        res
+            .status(404)
+            .send("Invalid Id");
+    }
+
+    Todo.findByIdAndRemove(id).then((todo) => {
+        if (!todo) {
+            res
+                .status(404)
+                .send("Not A Valid ToDo");
+        }
+        res
+            .send({
+                todo
+            });
+    }).catch((err) => {
+        res
+            .status(400)
+            .send(err);
+    });
+});
+
 app.listen(3000, () => {
     console.log('ToDo API is listening at port 3000');
 })
